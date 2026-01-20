@@ -1,0 +1,474 @@
+import React, { useState } from 'react';
+import { 
+  Calendar, 
+  Target, 
+  Users, 
+  Briefcase, 
+  Code, 
+  Cpu, 
+  Trophy, 
+  MapPin, 
+  Gamepad2, 
+  CheckCircle, 
+  Clock, 
+  Megaphone,
+  FileText,
+  BrainCircuit,
+  TrendingUp,
+  AlertCircle,
+  DollarSign,
+  PieChart,
+  Layout,
+  CheckSquare,
+  UserCheck
+} from 'lucide-react';
+
+// --- Expanded Data Constants ---
+
+const PROJECT_PHASES = [
+  {
+    id: 1,
+    name: "Foundation & Approval",
+    dates: "Jan 18 - Jan 28",
+    status: "active", 
+    description: "Internal planning, permissions, and budget approval.",
+    color: "bg-blue-600",
+    progress: 65
+  },
+  {
+    id: 2,
+    name: "External Relations",
+    dates: "Feb 9 - Feb 28",
+    status: "upcoming",
+    description: "Sponsorship hunting, judge acquisition, and university outreach.",
+    color: "bg-purple-600",
+    progress: 0
+  },
+  {
+    id: 3,
+    name: "Marketing Blitz",
+    dates: "Mar 6 - Mar 31",
+    status: "upcoming",
+    description: "Registration, campus visits, and digital campaigns (Eid Break included).",
+    color: "bg-orange-600",
+    progress: 0
+  },
+  {
+    id: 4,
+    name: "Execution",
+    dates: "Apr 1 - Apr 10",
+    status: "upcoming",
+    description: "Procurement, setup, online prelims, and the Main Event.",
+    color: "bg-green-600",
+    progress: 0
+  }
+];
+
+const TIMELINE_EVENTS = [
+  { date: "Jan 18-19", title: "Core Planning Session", type: "planning", phase: 1, owner: "Exec Panel", status: "Done", notes: "Define rules for 12 segments" },
+  { date: "Jan 20", title: "Draft Plan Finalization", type: "milestone", phase: 1, owner: "Musfique", status: "In Progress", notes: "Slide deck for Moderator" },
+  { date: "Jan 21", title: "Moderator Meeting", type: "meeting", phase: 1, owner: "President", status: "Pending", notes: "Approve dates & venue" },
+  { date: "Jan 25", title: "Sponsor Database & Proposal", type: "deliverable", phase: 1, owner: "Corporate Team", status: "Pending", notes: "Tier list (Platinum/Gold)" },
+  { date: "Jan 28", title: "Budget Submission (UIU)", type: "critical", phase: 1, owner: "Treasurer", status: "Pending", notes: "Contingency fund 15%" },
+  { date: "Feb 9-27", title: "Sponsorship Outreach", type: "outreach", phase: 2, owner: "Corporate Team", status: "Scheduled", notes: "Target: 5 IT firms, 2 Banks" },
+  { date: "Feb 9-27", title: "Judge Acquisition", type: "meeting", phase: 2, owner: "Faculty & Alum", status: "Scheduled", notes: "Datathon & Case Comp judges" },
+  { date: "Feb 28", title: "Promo Content Production", type: "creative", phase: 2, owner: "Media Team", status: "Scheduled", notes: "Teasers & Posters" },
+  { date: "Mar 6", title: "Registration Opens", type: "milestone", phase: 3, owner: "Tech Team", status: "Scheduled", notes: "Website Live" },
+  { date: "Mar 8-14", title: "Heavy Marketing (Pre-Eid)", type: "marketing", phase: 3, owner: "All Members", status: "Scheduled", notes: "Class campaigns" },
+  { date: "Mar 23", title: "Post-Eid Ad Campaign", type: "marketing", phase: 3, owner: "Media Team", status: "Scheduled", notes: "Paid boosts" },
+  { date: "Mar 23-31", title: "Campus Ambassador Visits", type: "outreach", phase: 3, owner: "PR Team", status: "Scheduled", notes: "BUET, DU, NSU, BRAC" },
+  { date: "Mar 31", title: "Registration Closes", type: "critical", phase: 3, owner: "Tech Team", status: "Scheduled", notes: "Final count" },
+  { date: "Apr 1-8", title: "Procurement & Decor", type: "logistics", phase: 4, owner: "Logistics", status: "Scheduled", notes: "Crests, T-shirts, Food" },
+  { date: "Apr 5-10", title: "Online Competitions Start", type: "event", phase: 4, owner: "Tech Team", status: "Scheduled", notes: "Kaggle & Case Comp" },
+  { date: "Apr 9-10", title: "DATA DAY 2026 (Main Event)", type: "critical", phase: 4, owner: "All Hands", status: "Scheduled", notes: "Showtime" },
+];
+
+const SEGMENTS = [
+  {
+    category: "Technical Core",
+    icon: <Code className="w-5 h-5 text-blue-400" />,
+    color: "border-blue-500",
+    lead: "VP Technical",
+    items: [
+      { name: "Datathon (Kaggle)", desc: "48hr Online + Onsite Final", team: "3-4 Members", venue: "Smart Lab 1", needs: "Kaggle Host, Dataset" },
+      { name: "CP with Python", desc: "Algorithmic challenges", team: "Individual", venue: "Computer Lab A", needs: "HackerRank/Toph platform" },
+      { name: "AI/DS Quiz", desc: "Rapid fire trivia", team: "2 Members", venue: "Auditorium", needs: "Buzzers, Slides" },
+      { name: "AI Innovation Challenge", desc: "Prototype Showcase", team: "3-4 Members", venue: "Lobby/Open Space", needs: "Tables, Power strips" }
+    ]
+  },
+  {
+    category: "Business & Creative",
+    icon: <Briefcase className="w-5 h-5 text-purple-400" />,
+    color: "border-purple-500",
+    lead: "VP Branding",
+    items: [
+      { name: "Business Case Comp", desc: "Solving Market problems", team: "3-4 Members", venue: "Seminar Room", needs: "Case Study Partner" },
+      { name: "EDA Competition", desc: "Visual storytelling", team: "2-3 Members", venue: "Online Submission", needs: "Tableau/PowerBI support" },
+      { name: "Poster Presentation", desc: "Academic research", team: "2-3 Members", venue: "Corridor Display", needs: "Easels/Stands" },
+      { name: "Blog Writing", desc: "Technical writing", team: "Individual", venue: "Online", needs: "Medium Publication" },
+      { name: "Wall Magazine", desc: "Creative displays", team: "3-5 Members", venue: "Lobby Wall", needs: "Art Supplies Space" }
+    ]
+  },
+  {
+    category: "Gamification & Fun",
+    icon: <Gamepad2 className="w-5 h-5 text-green-400" />,
+    color: "border-green-500",
+    lead: "Org Secretary",
+    items: [
+      { name: "Treasure Hunt", desc: "Crypto/Logic puzzles", team: "3-5 Members", venue: "Full Campus", needs: "Hidden Clues, Volunteers" },
+      { name: "Red Light Green Light", desc: "CV Movement Game", team: "Individual", venue: "Playground/Hall", needs: "Camera, Projector" },
+      { name: "Prompt Engineering", desc: "GenAI battle", team: "Individual", venue: "Lab B", needs: "ChatGPT Plus/Midjourney" }
+    ]
+  }
+];
+
+const BUDGET_ESTIMATES = [
+  { category: "Prize Pool (Total)", amount: 150000, type: "expense" },
+  { category: "Marketing & Ads", amount: 40000, type: "expense" },
+  { category: "Logistics (Decor/Sound)", amount: 80000, type: "expense" },
+  { category: "Food & Beverages", amount: 70000, type: "expense" },
+  { category: "Merchandise (T-shirts/Kits)", amount: 60000, type: "expense" },
+  { category: "Guests & Crests", amount: 30000, type: "expense" },
+];
+
+const SPONSOR_TIERS = [
+  { tier: "Title Sponsor", amount: 200000, benefits: "Naming Rights, Booth, Keynote" },
+  { tier: "Gold Sponsor", amount: 100000, benefits: "Logo on Tshirt, Workshop Slot" },
+  { tier: "Silver Sponsor", amount: 50000, benefits: "Logo on Banner, Social Shoutout" },
+  { tier: "Tech Partner", amount: 0, benefits: "Provides Cloud Credits / Hosting" }
+];
+
+// --- Components ---
+
+const StatCard = ({ label, value, icon, subtext, color }) => (
+  <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-lg flex items-start space-x-4">
+    <div className={`p-3 rounded-lg bg-slate-700/50 ${color}`}>
+      {icon}
+    </div>
+    <div>
+      <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{label}</p>
+      <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
+      <p className="text-xs text-slate-500 mt-1">{subtext}</p>
+    </div>
+  </div>
+);
+
+const TimelineItem = ({ event, isLast }) => {
+  const getTypeColor = (type) => {
+    switch (type) {
+      case 'critical': return 'bg-red-500/20 text-red-400 border-red-500/50';
+      case 'milestone': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
+      case 'meeting': return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
+      case 'marketing': return 'bg-pink-500/20 text-pink-400 border-pink-500/50';
+      case 'outreach': return 'bg-purple-500/20 text-purple-400 border-purple-500/50';
+      default: return 'bg-slate-600/20 text-slate-300 border-slate-600/50';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+     if (status === 'Done') return <CheckCircle className="w-4 h-4 text-green-500" />;
+     if (status === 'In Progress') return <Clock className="w-4 h-4 text-orange-500" />;
+     return <div className="w-3 h-3 rounded-full border border-slate-500" />;
+  }
+
+  return (
+    <div className="flex gap-4 relative group">
+      {/* Line */}
+      {!isLast && <div className="absolute left-[19px] top-8 bottom-[-16px] w-0.5 bg-slate-700 group-hover:bg-slate-600 transition-colors"></div>}
+      
+      {/* Dot */}
+      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 border-4 border-slate-900 ${event.phase === 4 ? 'bg-green-600' : 'bg-slate-700'}`}>
+        <Calendar className="w-4 h-4 text-white" />
+      </div>
+
+      {/* Content */}
+      <div className="pb-6 flex-1">
+        <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-slate-500 transition-all shadow-sm hover:shadow-md">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-2">
+            <div className="flex items-center gap-3">
+               <span className="text-orange-400 font-mono text-sm font-bold bg-orange-900/20 px-2 py-1 rounded">{event.date}</span>
+               <span className={`text-xs px-2 py-1 rounded border font-medium uppercase tracking-wider ${getTypeColor(event.type)}`}>
+                {event.type}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-900 px-2 py-1 rounded-full border border-slate-700">
+               <UserCheck className="w-3 h-3" />
+               {event.owner}
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-start">
+             <div>
+                <h4 className="text-white font-semibold text-lg">{event.title}</h4>
+                <p className="text-slate-400 text-sm mt-1">{event.notes}</p>
+             </div>
+             <div className="flex items-center gap-2 mt-1 bg-slate-900/50 px-3 py-1 rounded-full">
+                {getStatusIcon(event.status)}
+                <span className="text-xs font-mono text-slate-300">{event.status}</span>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SegmentCard = ({ category }) => (
+  <div className={`bg-slate-800 rounded-xl overflow-hidden border-t-4 ${category.color} shadow-lg flex flex-col h-full`}>
+    <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
+      <div className="flex items-center gap-2">
+        {category.icon}
+        <h3 className="text-lg font-bold text-white">{category.category}</h3>
+      </div>
+      <span className="text-xs font-mono text-slate-500 border border-slate-700 px-2 py-1 rounded">Lead: {category.lead}</span>
+    </div>
+    <div className="p-4 space-y-4 flex-1">
+      {category.items.map((item, idx) => (
+        <div key={idx} className="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50 hover:border-slate-600 transition-colors">
+          <div className="flex justify-between items-start mb-1">
+             <p className="text-slate-200 font-bold text-sm">{item.name}</p>
+             <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">{item.venue}</span>
+          </div>
+          <p className="text-slate-400 text-xs mb-2">{item.desc}</p>
+          <div className="flex gap-2 mt-2">
+             <span className="text-[10px] flex items-center gap-1 text-slate-500">
+                <Users className="w-3 h-3" /> {item.team}
+             </span>
+             <span className="text-[10px] flex items-center gap-1 text-slate-500">
+                <CheckSquare className="w-3 h-3" /> {item.needs}
+             </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const BudgetView = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
+        {/* Expenses */}
+        <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-red-400" />
+                Estimated Expenses
+            </h3>
+            <div className="space-y-4">
+                {BUDGET_ESTIMATES.map((item, idx) => (
+                    <div key={idx}>
+                        <div className="flex justify-between text-sm mb-1">
+                            <span className="text-slate-300">{item.category}</span>
+                            <span className="text-white font-mono">{item.amount.toLocaleString()} BDT</span>
+                        </div>
+                        <div className="w-full bg-slate-700 rounded-full h-2">
+                            <div className="bg-red-500/70 h-2 rounded-full" style={{ width: `${(item.amount / 150000) * 100}%` }}></div>
+                        </div>
+                    </div>
+                ))}
+                <div className="pt-4 border-t border-slate-700 flex justify-between items-center mt-4">
+                    <span className="text-slate-400 font-bold">Total Estimated Cost</span>
+                    <span className="text-xl font-bold text-red-400 font-mono">
+                        {BUDGET_ESTIMATES.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()} BDT
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {/* Income / Sponsors */}
+        <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-green-400" />
+                Sponsorship Targets
+            </h3>
+            <div className="space-y-4">
+                {SPONSOR_TIERS.map((item, idx) => (
+                    <div key={idx} className="bg-slate-900 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <h4 className="text-white font-bold text-sm">{item.tier}</h4>
+                            <p className="text-xs text-slate-500 mt-1">{item.benefits}</p>
+                        </div>
+                        <div className="text-right">
+                             <span className="text-green-400 font-mono font-bold text-lg">
+                                {item.amount > 0 ? `${(item.amount/1000)}k` : 'In-Kind'}
+                             </span>
+                        </div>
+                    </div>
+                ))}
+                
+                <div className="mt-6 bg-slate-700/30 p-4 rounded-lg border border-orange-500/30">
+                    <h4 className="text-orange-400 font-bold text-sm mb-2">President's Note</h4>
+                    <p className="text-slate-400 text-xs leading-relaxed">
+                        We need at least <span className="text-white font-bold">1 Title Sponsor</span> and <span className="text-white font-bold">2 Gold Sponsors</span> to break even. 
+                        Reg fees are estimated to cover only 20% of the budget. Focus heavily on Corporate Outreach in Feb.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const PhaseBar = () => (
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    {PROJECT_PHASES.map((phase) => (
+      <div key={phase.id} className="bg-slate-800 rounded-lg p-4 border border-slate-700 relative overflow-hidden group">
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-xs font-mono text-slate-500">PHASE 0{phase.id}</span>
+          {phase.status === 'active' && <span className="animate-pulse w-2 h-2 rounded-full bg-green-500"></span>}
+        </div>
+        <h4 className="text-white font-bold text-sm">{phase.name}</h4>
+        <p className="text-orange-400 text-[10px] font-mono mt-1">{phase.dates}</p>
+        
+        {/* Progress Bar */}
+        <div className="mt-3 w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+            <div className={`h-full ${phase.color}`} style={{ width: `${phase.progress}%` }}></div>
+        </div>
+        
+        <p className="text-slate-400 text-xs mt-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity absolute bg-slate-800 inset-0 p-4 border border-slate-600 flex items-center justify-center text-center z-10">
+          {phase.description}
+        </p>
+      </div>
+    ))}
+  </div>
+);
+
+export default function DataDayDashboard() {
+  const [activeTab, setActiveTab] = useState('timeline');
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans p-4 md:p-8">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-orange-500 mb-1">
+              <BrainCircuit className="w-5 h-5" />
+              <span className="text-sm font-bold tracking-widest uppercase">UIU Data Science Club</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white">
+              National Data Festival <span className="text-slate-700">2026</span>
+            </h1>
+            <p className="text-slate-400 mt-2 text-sm">Presidential Command Center & Master Plan</p>
+          </div>
+          
+          <div className="flex bg-slate-800 p-1 rounded-xl">
+            {[
+                { id: 'timeline', label: 'Timeline & Tasks', icon: Calendar },
+                { id: 'segments', label: 'Event Logistics', icon: Layout },
+                { id: 'budget', label: 'Finance & Ops', icon: PieChart },
+            ].map(tab => (
+                <button 
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${activeTab === tab.id ? 'bg-orange-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+                >
+                <tab.icon className="w-4 h-4" />
+                <span className="hidden md:inline">{tab.label}</span>
+                </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Key Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StatCard 
+            label="Total Budget" 
+            value="430k" 
+            subtext="BDT (Estimated)" 
+            icon={<DollarSign className="w-5 h-5 text-white" />}
+            color="bg-red-500"
+          />
+          <StatCard 
+            label="Days Remaining" 
+            value="446" 
+            subtext="Until Apr 09, 2026" 
+            icon={<Clock className="w-5 h-5 text-white" />} 
+            color="bg-orange-500"
+          />
+           <StatCard 
+            label="Total Events" 
+            value="12" 
+            subtext="3 Tracks" 
+            icon={<Trophy className="w-5 h-5 text-white" />} 
+            color="bg-purple-500"
+          />
+          <StatCard 
+            label="Action Item" 
+            value="Budget" 
+            subtext="Due Jan 28" 
+            icon={<AlertCircle className="w-5 h-5 text-white" />} 
+            color="bg-blue-500"
+          />
+        </div>
+
+        {/* Phase Visualization */}
+        <div className="mb-8">
+            <h3 className="text-white font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wide opacity-75">
+                <MapPin className="w-4 h-4 text-orange-500" />
+                Strategic Roadmap
+            </h3>
+            <PhaseBar />
+        </div>
+
+        {/* Main Content Area */}
+        <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-6 shadow-2xl">
+          
+          {activeTab === 'timeline' && (
+            <div className="animate-fadeIn">
+                <div className="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <Calendar className="w-6 h-6 text-orange-500" />
+                        Detailed Schedule & Owners
+                    </h2>
+                    <div className="flex gap-2">
+                        <span className="text-xs font-mono text-green-400 flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500"></div> Done</span>
+                        <span className="text-xs font-mono text-orange-400 flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-500"></div> In Progress</span>
+                    </div>
+                </div>
+              <div className="max-w-4xl mx-auto">
+                {TIMELINE_EVENTS.map((event, index) => (
+                  <TimelineItem 
+                    key={index} 
+                    event={event} 
+                    isLast={index === TIMELINE_EVENTS.length - 1} 
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'segments' && (
+            <div className="animate-fadeIn">
+                <div className="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <Trophy className="w-6 h-6 text-orange-500" />
+                        Event Specs & Logistics
+                    </h2>
+                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {SEGMENTS.map((cat, index) => (
+                  <SegmentCard key={index} category={cat} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'budget' && (
+            <div className="animate-fadeIn">
+                 <div className="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <PieChart className="w-6 h-6 text-orange-500" />
+                        Financial Overview
+                    </h2>
+                    <span className="text-xs bg-slate-800 px-3 py-1 rounded text-slate-400">Currency: BDT</span>
+                </div>
+                <BudgetView />
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}

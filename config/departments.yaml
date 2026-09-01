@@ -1,0 +1,36 @@
+# A flat list of medical departments used for fuzzy matching and to
+# validate department names returned by the extractor.
+departments:
+  - anatomy
+  - anesthesiology
+  - biochemistry
+  - cardiology
+  - community medicine
+  - dermatology
+  - endocrinology
+  - epidemiology
+  - forensic medicine
+  - gastroenterology
+  - general surgery
+  - gynecology
+  - hematology
+  - hepatology
+  - medical education
+  - medicine
+  - microbiology
+  - nephrology
+  - neurology
+  - oncology
+  - ophthalmology
+  - orthopedics
+  - pathology
+  - pediatrics
+  - pharmacology
+  - physical medicine
+  - physiology
+  - psychiatry
+  - public health
+  - radiology
+  - respiratory medicine
+  - surgery
+  - urology

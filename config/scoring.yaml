@@ -1,0 +1,28 @@
+# Department weights — higher means more aligned with the survey topic.
+# Source: spec §18.
+department_weights:
+  medical education: 30
+  public health: 25
+  community medicine: 25
+  health informatics: 25
+  epidemiology: 20
+  medical statistics: 20
+  medicine: 10
+  psychiatry: 10
+  pediatrics: 10
+  surgery: 5
+
+# Research-interest keyword weights.
+research_keywords:
+  "artificial intelligence": 25
+  "generative ai": 25
+  "chatgpt": 25
+  "machine learning": 20
+  "health informatics": 20
+  "medical education": 25
+  "clinical reasoning": 20
+  "digital health": 15
+  "large language model": 20
+  "natural language processing": 15
+  "decision support": 10
+  "evidence-based medicine": 10

@@ -1,0 +1,41 @@
+# Default crawler settings — overridden by environment variables.
+crawler:
+  user_agent: "Mozilla/5.0 (compatible; MedicalFacultyAgent/0.1)"
+  max_depth: 3
+  max_pages_per_domain: 100
+  timeout_ms: 30000
+  delay_seconds: 1.5
+  max_retries: 2
+  respect_robots: true
+  follow_external_links: false
+
+# LLM settings — overridden by env vars (OLLAMA_*).
+llm:
+  base_url: "http://localhost:11434"
+  model: "qwen3:8b"
+  num_gpu_layers: 35
+  num_ctx: 4096
+  temperature: 0.0
+  prompt_version: "v1"
+
+# Bangladesh-first institution discovery.
+discovery:
+  country: "Bangladesh"
+  institution_type: "medical_college"
+  max_results_per_query: 20
+  queries:
+    - "Bangladesh medical college official website"
+    - "Bangladesh medical university official website"
+    - "Bangladesh medical school faculty"
+    - "Bangladesh medical college faculty members"
+    - "Bangladesh medical university academic staff"
+    - 'site:edu.bd "faculty members" "medical"'
+    - 'site:edu.bd "professor" "department of medicine"'
+    - 'site:ac.bd "medical" "faculty"'
+    - "BMDC affiliated medical college Bangladesh"
+    - "Bangladesh medical college teacher list"
+
+# Scoring thresholds — weights live in scoring.yaml.
+scoring:
+  high_relevance_threshold: 60.0
+  medium_relevance_threshold: 25.0
